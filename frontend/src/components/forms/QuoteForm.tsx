@@ -10,7 +10,68 @@ type Props = {
   initialMessage?: string;
 };
 
-export function QuoteForm({ initialProduct = "", initialIndustry = "", initialMessage = "" }: Props) {
+type FieldProps = {
+  label: string;
+  name: keyof QuotePayload;
+  value: string;
+  onChange: (name: keyof QuotePayload, value: string) => void;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  as?: "input" | "textarea";
+  error?: string;
+};
+
+/**
+ * Defined OUTSIDE the parent. If this lived inside QuoteForm, React would
+ * treat it as a new component on every render and remount the input,
+ * causing focus loss after each keystroke.
+ */
+function Field({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  required = false,
+  placeholder,
+  as = "input",
+  error,
+}: FieldProps) {
+  const commonProps = {
+    id: name,
+    name,
+    required,
+    placeholder,
+    value,
+    onChange: (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => onChange(name, e.target.value),
+    className:
+      "w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+    style: error ? { borderColor: "#dc2626" } : undefined,
+  };
+
+  return (
+    <div>
+      <label htmlFor={name} className="block text-sm font-medium mb-1.5">
+        {label} {required && <span className="text-red-600">*</span>}
+      </label>
+      {as === "textarea" ? (
+        <textarea rows={5} {...commonProps} />
+      ) : (
+        <input type={type} {...commonProps} />
+      )}
+      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+export function QuoteForm({
+  initialProduct = "",
+  initialIndustry = "",
+  initialMessage = "",
+}: Props) {
   const [form, setForm] = useState<QuotePayload>({
     name: "",
     email: "",
@@ -22,9 +83,10 @@ export function QuoteForm({ initialProduct = "", initialIndustry = "", initialMe
   });
   const [submitting, setSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [status, setStatus] = useState<{ type: "idle" | "success" | "error"; message?: string }>({
-    type: "idle",
-  });
+  const [status, setStatus] = useState<{
+    type: "idle" | "success" | "error";
+    message?: string;
+  }>({ type: "idle" });
 
   const update = (key: keyof QuotePayload, value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -45,8 +107,20 @@ export function QuoteForm({ initialProduct = "", initialIndustry = "", initialMe
 
     const result = await submitQuote(form);
     if (result.ok) {
-      setStatus({ type: "success", message: "Thanks! We've received your request and will respond within one business day." });
-      setForm({ name: "", email: "", phone: "", company: "", product_of_interest: "", quantity: "", message: "" });
+      setStatus({
+        type: "success",
+        message:
+          "Thanks! We've received your request and will respond within one business day.",
+      });
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        product_of_interest: "",
+        quantity: "",
+        message: "",
+      });
     } else {
       setStatus({ type: "error", message: result.error });
       if (result.fields) setFieldErrors(result.fields);
@@ -54,61 +128,63 @@ export function QuoteForm({ initialProduct = "", initialIndustry = "", initialMe
     setSubmitting(false);
   };
 
-  const Field = ({
-    label,
-    name,
-    type = "text",
-    required = false,
-    placeholder,
-    as = "input",
-  }: {
-    label: string;
-    name: keyof QuotePayload;
-    type?: string;
-    required?: boolean;
-    placeholder?: string;
-    as?: "input" | "textarea";
-  }) => {
-    const commonProps = {
-      id: name,
-      name,
-      required,
-      placeholder,
-      value: (form[name] ?? "") as string,
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        update(name, e.target.value),
-      className:
-        "w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
-      style: fieldErrors[name as string] ? { borderColor: "#dc2626" } : undefined,
-    };
-    return (
-      <div>
-        <label htmlFor={name} className="block text-sm font-medium mb-1.5">
-          {label} {required && <span className="text-red-600">*</span>}
-        </label>
-        {as === "textarea" ? (
-          <textarea rows={5} {...commonProps} />
-        ) : (
-          <input type={type} {...commonProps} />
-        )}
-        {fieldErrors[name as string] && (
-          <p className="text-xs text-red-600 mt-1">{fieldErrors[name as string].join(" ")}</p>
-        )}
-      </div>
-    );
-  };
-
   return (
     <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-5" noValidate>
-      <Field label="Full name" name="name" required placeholder="Your name" />
-      <Field label="Email" name="email" type="email" required placeholder="you@company.com" />
-      <Field label="Phone" name="phone" type="tel" placeholder="Optional" />
-      <Field label="Company" name="company" placeholder="Optional" />
+      <Field
+        label="Full name"
+        name="name"
+        required
+        placeholder="Your name"
+        value={form.name}
+        onChange={update}
+        error={fieldErrors.name?.[0]}
+      />
+      <Field
+        label="Email"
+        name="email"
+        type="email"
+        required
+        placeholder="you@company.com"
+        value={form.email}
+        onChange={update}
+        error={fieldErrors.email?.[0]}
+      />
+      <Field
+        label="Phone"
+        name="phone"
+        type="tel"
+        placeholder="Optional"
+        value={form.phone ?? ""}
+        onChange={update}
+        error={fieldErrors.phone?.[0]}
+      />
+      <Field
+        label="Company"
+        name="company"
+        placeholder="Optional"
+        value={form.company ?? ""}
+        onChange={update}
+        error={fieldErrors.company?.[0]}
+      />
       <div className="md:col-span-2">
-        <Field label="Product of interest" name="product_of_interest" placeholder="e.g. Hydraulic Oil HV-46" />
+        <Field
+          label="Product of interest"
+          name="product_of_interest"
+          placeholder="e.g. Hydraulic Oil HV-46"
+          value={form.product_of_interest ?? ""}
+          onChange={update}
+          error={fieldErrors.product_of_interest?.[0]}
+        />
       </div>
       <div className="md:col-span-2">
-        <Field label="Quantity / requirement" name="quantity" placeholder="e.g. 20 × 200L drums per month" />
+        <Field
+          label="Quantity / requirement"
+          name="quantity"
+          placeholder="e.g. 20 × 200L drums per month"
+          value={form.quantity ?? ""}
+          onChange={update}
+          error={fieldErrors.quantity?.[0]}
+        />
       </div>
       <div className="md:col-span-2">
         <Field
@@ -117,6 +193,9 @@ export function QuoteForm({ initialProduct = "", initialIndustry = "", initialMe
           required
           as="textarea"
           placeholder="Tell us what you need — product, quantity, delivery location, timeline."
+          value={form.message}
+          onChange={update}
+          error={fieldErrors.message?.[0]}
         />
       </div>
 
