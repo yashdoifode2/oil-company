@@ -17,7 +17,7 @@ class ProductCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.filter(status=Product.Status.PUBLISHED).order_by("order")
-    lookup_field = "slug"
+    lookup_field = "slug"                    # ← must be here
     permission_classes = [permissions.AllowAny]
     filterset_fields = ("category__slug", "is_featured")
     search_fields = ("name", "short_description", "full_description")

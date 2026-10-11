@@ -1,9 +1,76 @@
-export default function ProductsPage() {
+import type { Metadata } from "next";
+import { apiGet } from "@/lib/api";
+import type { Paginated, ProductCategory, ProductListItem } from "@/types/cms";
+import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductFilters } from "@/components/products/ProductFilters";
+import { Pagination } from "@/components/ui/Pagination";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+
+export const revalidate = 120;
+
+export const metadata: Metadata = {
+  title: "Products",
+  description: "Browse our full catalog of certified industrial, automotive, and edible oils.",
+};
+
+type SearchParams = Promise<{
+  page?: string;
+  search?: string;
+  category__slug?: string;
+}>;
+
+export default async function ProductsPage({ searchParams }: { searchParams: SearchParams }) {
+  const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page ?? "1"));
+  const search = sp.search ?? "";
+  const category = sp.category__slug ?? "";
+
+  const qs = new URLSearchParams();
+  qs.set("page", String(page));
+  if (search) qs.set("search", search);
+  if (category) qs.set("category__slug", category);
+
+  let products: Paginated<ProductListItem> = { count: 0, next: null, previous: null, results: [] };
+  let categories: Paginated<ProductCategory> = { count: 0, next: null, previous: null, results: [] };
+
+  try {
+    [products, categories] = await Promise.all([
+      apiGet<Paginated<ProductListItem>>(`/products/?${qs.toString()}`, {
+        revalidate: 120,
+        tags: ["products"],
+      }),
+      apiGet<Paginated<ProductCategory>>(`/product-categories/`, {
+        revalidate: 300,
+        tags: ["product-categories"],
+      }),
+    ]);
+  } catch (err) {
+    console.error("[products] fetch failed:", err);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(products.count / 20));
+
   return (
-    <section className="section container-site">
-      <p className="eyebrow">OUR RANGE</p>
-      <h1>Products</h1>
-      <p>Explore our oil products and lubrication solutions. Product listings can be connected to the Django CMS API.</p>
-    </section>
+    <div className="container-site py-12">
+      <Breadcrumbs items={[{ label: "Products" }]} />
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold mb-3">Our Products</h1>
+        <p className="text-gray-600 max-w-2xl">
+          Certified oils for every industry. Filter by category or search our full catalog.
+        </p>
+      </div>
+      <ProductFilters
+        categories={categories.results}
+        currentCategory={category}
+        currentSearch={search}
+      />
+      <ProductGrid products={products.results} />
+      <Pagination
+        current={page}
+        total={totalPages}
+        basePath="/products"
+        query={{ search, category__slug: category }}
+      />
+    </div>
   );
 }
