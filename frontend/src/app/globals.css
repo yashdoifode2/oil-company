@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@source "../**/*.{ts,tsx,js,jsx,mdx}";
 
 :root {
   --color-primary: #0b3d91;
@@ -15,8 +15,7 @@
   --content-width: 1200px;
 }
 
-html,
-body {
+html, body {
   background: var(--color-background);
   color: var(--color-text);
 }
@@ -30,9 +29,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading, ui-sans-serif, system-ui, sans-serif);
 }
 
-a {
-  color: var(--color-link);
-}
+a { color: var(--color-link); }
 
 .btn {
   display: inline-flex;
@@ -44,17 +41,8 @@ a {
   transition: opacity 0.15s ease, background 0.15s ease;
 }
 .btn:hover { opacity: 0.9; }
-
-.btn-primary {
-  background: var(--color-button);
-  color: var(--color-button-text);
-}
-
-.btn-outline {
-  background: transparent;
-  color: var(--color-button);
-  border: 2px solid var(--color-button);
-}
+.btn-primary { background: var(--color-button); color: var(--color-button-text); }
+.btn-outline { background: transparent; color: var(--color-button); border: 2px solid var(--color-button); }
 
 .container-site {
   max-width: var(--content-width);
