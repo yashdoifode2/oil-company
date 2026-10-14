@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiGet, mediaUrl } from "@/lib/api";
 import type { ArticleDetail, ArticleListItem, Paginated } from "@/types/cms";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { RichText } from "@/components/ui/RichText";
 import { formatDate } from "@/lib/format";
 
@@ -23,14 +23,20 @@ async function loadArticle(slug: string): Promise<ArticleDetail | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
   const { slug } = await params;
   const a = await loadArticle(slug);
   if (!a) return { title: "Article not found" };
   return {
     title: a.title,
     description: a.excerpt,
-    openGraph: a.featured_image ? { images: [mediaUrl(a.featured_image)] } : undefined,
+    openGraph: a.featured_image
+      ? { images: [mediaUrl(a.featured_image)] }
+      : undefined,
   };
 }
 
@@ -41,10 +47,10 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   let related: ArticleListItem[] = [];
   try {
-    const res = await apiGet<Paginated<ArticleListItem>>(`/articles/?page_size=6`, {
-      revalidate: 300,
-      tags: ["articles"],
-    });
+    const res = await apiGet<Paginated<ArticleListItem>>(
+      `/articles/?page_size=6`,
+      { revalidate: 300, tags: ["articles"] }
+    );
     related = res.results.filter((a) => a.id !== article.id).slice(0, 3);
   } catch {
     /* ignore */
@@ -52,45 +58,29 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   return (
     <>
-      <section
-        className="py-16 md:py-20"
-        style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)" }}
+      <PageBanner
+        eyebrow={article.category?.name || "Article"}
+        title={article.title}
+        image={article.featured_image ? mediaUrl(article.featured_image) : "/hero-blog.jpg"}
+        breadcrumbs={[
+          { label: "Blog", href: "/blog" },
+          { label: article.title },
+        ]}
+        size="tall"
       >
-        <div className="container-site text-white">
-          <Breadcrumbs items={[{ label: "Blog", href: "/blog" }, { label: article.title }]} />
-          {article.category && (
-            <div
-              className="text-xs uppercase tracking-wider font-bold mb-3"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              {article.category.name}
-            </div>
+        <div className="flex items-center gap-4 text-sm text-white/80 mt-2">
+          {article.author_name && <span>By {article.author_name}</span>}
+          {article.published_at && (
+            <time dateTime={article.published_at}>
+              {formatDate(article.published_at)}
+            </time>
           )}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold max-w-4xl leading-tight mb-4">
-            {article.title}
-          </h1>
-          <div className="flex items-center gap-4 text-sm text-white/80">
-            {article.author_name && <span>By {article.author_name}</span>}
-            {article.published_at && (
-              <time dateTime={article.published_at}>{formatDate(article.published_at)}</time>
-            )}
-          </div>
         </div>
-      </section>
+      </PageBanner>
 
       <article className="container-site py-12">
         <div className="grid lg:grid-cols-[1fr_320px] gap-12">
           <div>
-            {article.featured_image && (
-              <div className="aspect-video overflow-hidden rounded-lg mb-10 bg-[var(--color-surface)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={mediaUrl(article.featured_image)}
-                  alt={article.image_alt || article.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
             <RichText html={article.body} />
             {article.tags?.length > 0 && (
               <div className="mt-10 flex flex-wrap gap-2 pt-6 border-t">
@@ -108,7 +98,9 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
           <aside className="space-y-8">
             <div className="bg-[var(--color-surface)] rounded-lg p-6">
-              <h3 className="font-bold text-sm uppercase tracking-wide mb-4">Need help?</h3>
+              <h3 className="font-bold text-sm uppercase tracking-wide mb-4">
+                Need help?
+              </h3>
               <p className="text-sm text-[var(--color-muted)] mb-4">
                 Talk to our technical team to find the right oil for your application.
               </p>
@@ -119,10 +111,16 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
             {related.length > 0 && (
               <div>
-                <h3 className="font-bold text-sm uppercase tracking-wide mb-4">Related Articles</h3>
+                <h3 className="font-bold text-sm uppercase tracking-wide mb-4">
+                  Related Articles
+                </h3>
                 <div className="space-y-4">
                   {related.map((a) => (
-                    <Link key={a.id} href={`/blog/${a.slug}/`} className="flex gap-3 group">
+                    <Link
+                      key={a.id}
+                      href={`/blog/${a.slug}/`}
+                      className="flex gap-3 group"
+                    >
                       {a.featured_image && (
                         <div className="w-20 h-20 shrink-0 rounded overflow-hidden bg-[var(--color-surface)]">
                           {/* eslint-disable-next-line @next/next/no-img-element */}

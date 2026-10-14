@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { apiGet } from "@/lib/api";
 import type { SiteBootstrap } from "@/types/cms";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 
 export const revalidate = 300;
@@ -14,12 +14,19 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<{ product?: string; industry?: string }>;
 
-export default async function RequestQuotePage({ searchParams }: { searchParams: SearchParams }) {
+export default async function RequestQuotePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const sp = await searchParams;
 
   let company = null;
   try {
-    const site = await apiGet<SiteBootstrap>("/site/", { revalidate: 300, tags: ["site"] });
+    const site = await apiGet<SiteBootstrap>("/site/", {
+      revalidate: 300,
+      tags: ["site"],
+    });
     company = site.company;
   } catch {
     /* ignore */
@@ -27,18 +34,13 @@ export default async function RequestQuotePage({ searchParams }: { searchParams:
 
   return (
     <>
-      <section
-        className="py-16 md:py-20"
-        style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)" }}
-      >
-        <div className="container-site text-white">
-          <Breadcrumbs items={[{ label: "Request a Quote" }]} />
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Request a Quote</h1>
-          <p className="text-lg text-white/85 max-w-2xl">
-            Tell us your requirements and our team will prepare a tailored quote within one business day.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        eyebrow="Get Pricing"
+        title="Request a Quote"
+        description="Tell us your requirements and our team will prepare a tailored quote within one business day."
+        image="/hero-quote.jpg"
+        breadcrumbs={[{ label: "Request a Quote" }]}
+      />
 
       <div className="container-site py-16">
         <div className="grid lg:grid-cols-[1fr_340px] gap-12">
@@ -68,7 +70,11 @@ export default async function RequestQuotePage({ searchParams }: { searchParams:
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.5"
-                      style={{ color: "var(--color-primary)", flexShrink: 0, marginTop: 3 }}
+                      style={{
+                        color: "var(--color-primary)",
+                        flexShrink: 0,
+                        marginTop: 3,
+                      }}
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
@@ -82,7 +88,10 @@ export default async function RequestQuotePage({ searchParams }: { searchParams:
               <div className="border rounded-lg p-6">
                 <h3 className="font-bold mb-4">Prefer to talk?</h3>
                 {company.phone_primary && (
-                  <a href={`tel:${company.phone_primary.replace(/\s/g, "")}`} className="block mb-3">
+                  <a
+                    href={`tel:${company.phone_primary.replace(/\s/g, "")}`}
+                    className="block mb-3"
+                  >
                     <div className="text-xs text-[var(--color-muted)]">Phone</div>
                     <div className="font-semibold">{company.phone_primary}</div>
                   </a>

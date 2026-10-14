@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { apiGet, mediaUrl } from "@/lib/api";
 import type { ProductDetail } from "@/types/cms";
 import { ProductGallery } from "@/components/products/ProductGallery";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { RichText } from "@/components/ui/RichText";
 
 export const revalidate = 120;
@@ -23,7 +23,11 @@ async function loadProduct(slug: string): Promise<ProductDetail | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
   const { slug } = await params;
   const p = await loadProduct(slug);
   if (!p) return { title: "Product not found" };
@@ -42,24 +46,24 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
 
   return (
     <>
-      <section className="py-10 bg-[var(--color-surface)] border-b">
-        <div className="container-site">
-          <Breadcrumbs
-            items={[
-              { label: "Products", href: "/products" },
-              ...(product.category
-                ? [
-                    {
-                      label: product.category.name,
-                      href: `/products?category__slug=${product.category.slug}`,
-                    },
-                  ]
-                : []),
-              { label: product.name },
-            ]}
-          />
-        </div>
-      </section>
+      <PageBanner
+        eyebrow={product.category?.name || "Product"}
+        title={product.name}
+        image="/hero-products.jpg"
+        breadcrumbs={[
+          { label: "Products", href: "/products" },
+          ...(product.category
+            ? [
+                {
+                  label: product.category.name,
+                  href: `/products?category__slug=${product.category.slug}`,
+                },
+              ]
+            : []),
+          { label: product.name },
+        ]}
+        size="compact"
+      />
 
       <section className="container-site py-12">
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
@@ -71,7 +75,10 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
 
           <div>
             {product.category && (
-              <div className="text-xs uppercase tracking-[0.14em] font-bold mb-3 text-[var(--color-primary)]">
+              <div
+                className="text-xs uppercase tracking-[0.14em] font-bold mb-3"
+                style={{ color: "var(--color-primary)" }}
+              >
                 {product.category.name}
               </div>
             )}
@@ -84,7 +91,9 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
                 {product.hero_tagline}
               </p>
             )}
-            <p className="text-lg text-[var(--color-muted)] mb-6">{product.short_description}</p>
+            <p className="text-lg text-[var(--color-muted)] mb-6">
+              {product.short_description}
+            </p>
 
             {specs.length > 0 && (
               <div className="mb-6 grid grid-cols-2 gap-3">
@@ -132,18 +141,20 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
 
         <div className="border-b mb-8">
           <nav className="flex gap-1 -mb-px overflow-x-auto">
-            {["Overview", "Specifications", "Packaging", "Documents"].map((tab, i) => (
-              <span
-                key={tab}
-                className={`px-5 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${
-                  i === 0
-                    ? "text-[var(--color-primary)] border-[var(--color-primary)]"
-                    : "text-[var(--color-muted)] border-transparent"
-                }`}
-              >
-                {tab}
-              </span>
-            ))}
+            {["Overview", "Specifications", "Packaging", "Documents"].map(
+              (tab, i) => (
+                <span
+                  key={tab}
+                  className={`px-5 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ${
+                    i === 0
+                      ? "text-[var(--color-primary)] border-[var(--color-primary)]"
+                      : "text-[var(--color-muted)] border-transparent"
+                  }`}
+                >
+                  {tab}
+                </span>
+              )
+            )}
           </nav>
         </div>
 
@@ -156,8 +167,13 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
               <table className="w-full text-sm border rounded overflow-hidden">
                 <tbody>
                   {specs.map(([key, value], i) => (
-                    <tr key={key} className={i % 2 ? "bg-[var(--color-surface)]" : "bg-white"}>
-                      <th className="text-left px-4 py-2.5 font-medium w-1/2">{key}</th>
+                    <tr
+                      key={key}
+                      className={i % 2 ? "bg-[var(--color-surface)]" : "bg-white"}
+                    >
+                      <th className="text-left px-4 py-2.5 font-medium w-1/2">
+                        {key}
+                      </th>
                       <td className="px-4 py-2.5">{String(value)}</td>
                     </tr>
                   ))}
@@ -191,7 +207,9 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
                     <span>
                       <span className="font-medium block">{doc.title}</span>
                       {doc.description && (
-                        <span className="text-sm text-[var(--color-muted)]">{doc.description}</span>
+                        <span className="text-sm text-[var(--color-muted)]">
+                          {doc.description}
+                        </span>
                       )}
                     </span>
                   </a>
@@ -199,6 +217,19 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
               </div>
             </div>
           )}
+        </div>
+
+        <div className="mt-16 p-8 rounded-lg text-center bg-[var(--color-surface)]">
+          <h2 className="text-2xl font-bold mb-3">Need pricing or samples?</h2>
+          <p className="text-[var(--color-muted)] mb-6">
+            Our team responds within one business day.
+          </p>
+          <Link
+            href={`/request-quote?product=${encodeURIComponent(product.name)}`}
+            className="btn btn-primary btn-lg"
+          >
+            Request a Quote
+          </Link>
         </div>
       </section>
     </>

@@ -4,7 +4,7 @@ import { apiGet, mediaUrl } from "@/lib/api";
 import type { ArticleListItem, Paginated } from "@/types/cms";
 import { ArticleCard } from "@/components/blog/ArticleCard";
 import { Pagination } from "@/components/ui/Pagination";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { formatDate } from "@/lib/format";
 
 export const revalidate = 120;
@@ -16,7 +16,11 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<{ page?: string }>;
 
-export default async function BlogPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page ?? "1"));
 
@@ -27,10 +31,10 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
     results: [],
   };
   try {
-    articles = await apiGet<Paginated<ArticleListItem>>(`/articles/?page=${page}`, {
-      revalidate: 120,
-      tags: ["articles"],
-    });
+    articles = await apiGet<Paginated<ArticleListItem>>(
+      `/articles/?page=${page}`,
+      { revalidate: 120, tags: ["articles"] }
+    );
   } catch (err) {
     console.error("[blog] fetch failed:", err);
   }
@@ -40,27 +44,15 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
 
   return (
     <>
-      <section
-        className="relative py-20 md:py-24 overflow-hidden"
-        style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)" }}
-      >
-        <div className="container-site text-white">
-          <p
-            className="text-xs uppercase tracking-[0.18em] font-bold mb-3"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            News & Knowledge
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Insights & Blog</h1>
-          <p className="text-lg text-white/85 max-w-2xl">
-            Industry insights, expert guides, and the latest from Premium Oil.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        eyebrow="News & Knowledge"
+        title="Insights & Blog"
+        description="Industry insights, expert guides, and the latest from Premium Oil."
+        image="/hero-blog.jpg"
+        breadcrumbs={[{ label: "Blog" }]}
+      />
 
       <div className="container-site py-12">
-        <Breadcrumbs items={[{ label: "Blog" }]} />
-
         {featured && (
           <div className="grid lg:grid-cols-3 gap-8 mb-16">
             <Link
@@ -91,7 +83,9 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
                 <h2 className="text-2xl md:text-3xl font-bold mb-3 group-hover:text-[var(--color-primary)] transition-colors">
                   {featured.title}
                 </h2>
-                <p className="text-[var(--color-muted)] mb-4 line-clamp-3">{featured.excerpt}</p>
+                <p className="text-[var(--color-muted)] mb-4 line-clamp-3">
+                  {featured.excerpt}
+                </p>
                 <span className="font-semibold text-[var(--color-primary)] text-sm">
                   Read article →
                 </span>
@@ -101,13 +95,15 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
             <aside className="bg-[var(--color-surface)] rounded-lg p-6">
               <h3 className="font-bold mb-4">Categories</h3>
               <ul className="space-y-2 text-sm">
-                {["Lubrication", "Industry News", "Technical", "Company Updates"].map((c) => (
-                  <li key={c}>
-                    <span className="text-[var(--color-muted)] hover:text-[var(--color-primary)] cursor-pointer">
-                      {c}
-                    </span>
-                  </li>
-                ))}
+                {["Lubrication", "Industry News", "Technical", "Company Updates"].map(
+                  (c) => (
+                    <li key={c}>
+                      <span className="text-[var(--color-muted)] hover:text-[var(--color-primary)] cursor-pointer">
+                        {c}
+                      </span>
+                    </li>
+                  )
+                )}
               </ul>
             </aside>
           </div>
