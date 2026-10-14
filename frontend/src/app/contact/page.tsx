@@ -39,10 +39,7 @@ export default async function ContactPage({
   return (
     <>
       <PageBanner
-        eyebrow="Get in Touch"
-        title="Contact Us"
-        description="We're here to help. Get in touch with our team for product enquiries, quotes, or technical support."
-        image="/hero-contact.jpg"
+        bannerKey="contact"
         breadcrumbs={[{ label: "Contact" }]}
       />
 

@@ -32,3 +32,10 @@ class MediaAssetSerializer(serializers.ModelSerializer):
         model = MediaAsset
         fields = ("id", "file", "title", "alt_text", "description", "mime_type", "size_bytes", "uploaded_at")
         read_only_fields = ("mime_type", "size_bytes", "uploaded_at")
+from .models import CompanyProfile, MediaAsset, PageBanner, SiteSettings, SocialLink, ThemeSettings
+
+
+class PageBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageBanner
+        fields = ("key", "eyebrow", "heading", "description", "image", "image_alt", "overlay_opacity", "is_active")

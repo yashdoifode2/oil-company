@@ -84,3 +84,24 @@ class MediaAssetAdmin(admin.ModelAdmin):
             else:
                 obj.mime_type = "application/octet-stream"
         super().save_model(request, obj, form, change)
+
+from .models import CompanyProfile, MediaAsset, PageBanner, SiteSettings, SocialLink, ThemeSettings
+
+
+@admin.register(PageBanner)
+class PageBannerAdmin(admin.ModelAdmin):
+    list_display = ("key", "title", "heading", "is_active", "updated_at")
+    list_filter = ("is_active",)
+    search_fields = ("key", "title", "heading")
+    list_editable = ("is_active",)
+    fieldsets = (
+        ("Identification", {
+            "fields": ("key", "title"),
+            "description": "The 'key' is a stable identifier used by the frontend. "
+                           "Do not change it after creating the banner.",
+        }),
+        ("Content", {"fields": ("eyebrow", "heading", "description")}),
+        ("Image", {"fields": ("image", "image_alt", "overlay_opacity")}),
+        ("Status", {"fields": ("is_active", "updated_at")}),
+    )
+    readonly_fields = ("updated_at",)

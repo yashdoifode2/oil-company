@@ -35,10 +35,7 @@ export default async function DocumentsPage() {
   return (
     <>
       <PageBanner
-        eyebrow="Resources"
-        title="Documents"
-        description="Product data sheets, certifications, and technical documentation."
-        image="/hero-documents.jpg"
+        bannerKey="documents"
         breadcrumbs={[{ label: "Documents" }]}
       />
 

@@ -153,3 +153,52 @@ class MediaAsset(models.Model):
 
     def __str__(self):
         return self.title or self.file.name
+
+class PageBanner(models.Model):
+    """
+    Editable hero banner for pages that don't have a dedicated CMS Page
+    record — e.g. products listing, blog listing, contact, faqs.
+    Keyed by a stable slug the frontend looks up.
+    """
+
+    key = models.SlugField(
+        max_length=64,
+        unique=True,
+        help_text="Stable identifier, e.g. 'products', 'blog', 'contact'. Used by the frontend.",
+    )
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Internal label for the admin. Not shown on the site.",
+    )
+    eyebrow = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text="Small uppercase text above the main heading.",
+    )
+    heading = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+    image = models.ImageField(
+        upload_to="banners/",
+        blank=True,
+        null=True,
+        help_text="Background image. Recommended size: 2000×800 or larger.",
+    )
+    image_alt = models.CharField(max_length=255, blank=True)
+    overlay_opacity = models.PositiveSmallIntegerField(
+        default=78,
+        help_text="0–100. Higher = darker overlay for better text contrast.",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Uncheck to fall back to the default gradient.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("key",)
+        verbose_name = "Page Banner"
+        verbose_name_plural = "Page Banners"
+
+    def __str__(self):
+        return f"{self.key} — {self.title or self.heading or self.key}"

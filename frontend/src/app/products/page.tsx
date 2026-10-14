@@ -68,10 +68,7 @@ export default async function ProductsPage({
   return (
     <>
       <PageBanner
-        eyebrow="Product Catalogue"
-        title="Our Products"
-        description="Explore our range of high-performance oils and lubricants for diverse industrial needs."
-        image="/hero-products.jpg"
+        bannerKey="products"
         breadcrumbs={[{ label: "Products" }]}
       />
 

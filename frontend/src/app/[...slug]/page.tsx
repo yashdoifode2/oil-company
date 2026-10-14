@@ -45,54 +45,9 @@ export default async function DynamicPage({ params }: { params: Params }) {
 
   return (
     <article>
-      {/* ---------- Page header (skipped if a Hero section exists) ---------- */}
+      {/* ---------- Fallback header when there's no Hero section ---------- */}
       {!hasHero && (
-        <header
-          className="relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--color-primary) 0%, #0a2c66 100%)",
-          }}
-        >
-          <div className="container-site py-20 md:py-24 text-white">
-            <Breadcrumbs items={[{ label: page.title }]} />
-            <p
-              className="text-xs uppercase tracking-[0.2em] font-semibold mb-4"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              Our Company
-            </p>
-            <h1 className="text-4xl md:text-5xl font-bold max-w-4xl leading-tight">
-              {page.title}
-            </h1>
-            {page.short_description && (
-              <p className="mt-6 text-lg text-white/80 max-w-2xl leading-relaxed">
-                {page.short_description}
-              </p>
-            )}
-          </div>
-        </header>
-      )}
-
-      {/* ---------- Featured image ---------- */}
-      {page.featured_image && !hasHero && (
-        <div className="container-site -mt-12 md:-mt-16 relative z-10">
-          <div className="aspect-[21/9] bg-gray-100 rounded-xl overflow-hidden shadow-xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={mediaUrl(page.featured_image)}
-              alt={page.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* ---------- Standalone content ---------- */}
-      {page.content && (
-        <section className="container-site py-16 max-w-3xl">
-          <RichText html={page.content} />
-        </section>
+        <PageHeader page={page} />
       )}
 
       {/* ---------- CMS sections ---------- */}
@@ -100,6 +55,69 @@ export default async function DynamicPage({ params }: { params: Params }) {
         <PageSectionRenderer key={s.id} section={s} />
       ))}
     </article>
+  );
+}
+
+/**
+ * Fallback header used when a CMS page has no explicit Hero section.
+ * Renders the navy gradient + featured image, matching the rest of the site.
+ */
+function PageHeader({ page }: { page: PageDetail }) {
+  const hasImage = Boolean(page.featured_image);
+
+  return (
+    <section className="relative overflow-hidden">
+      {hasImage ? (
+        <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={mediaUrl(page.featured_image!)}
+            alt={page.title}
+            className="w-full h-full object-cover"
+            fetchPriority="high"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(100deg, rgba(11,61,145,0.94) 0%, rgba(11,61,145,0.78) 45%, rgba(11,61,145,0.42) 75%, rgba(11,61,145,0.22) 100%)",
+            }}
+          />
+        </div>
+      ) : (
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)",
+          }}
+        />
+      )}
+
+      <div className="container-site relative py-20 md:py-24 min-h-[320px] md:min-h-[380px] flex items-center text-white">
+        <div className="max-w-3xl w-full">
+          <Breadcrumbs items={[{ label: page.title }]} />
+          <p
+            className="text-xs uppercase tracking-[0.2em] font-bold mb-4 inline-flex items-center gap-3"
+            style={{ color: "var(--color-secondary)" }}
+          >
+            <span
+              className="w-8 h-[2px]"
+              style={{ background: "var(--color-secondary)" }}
+            />
+            Our Company
+          </p>
+          <h1 className="text-4xl md:text-5xl font-bold max-w-4xl leading-[1.1] mb-4">
+            {page.title}
+          </h1>
+          {page.short_description && (
+            <p className="text-lg text-white/85 max-w-2xl leading-relaxed">
+              {page.short_description}
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -134,83 +152,97 @@ function PageSectionRenderer({ section }: { section: PageSection }) {
   }
 }
 
-/* ---------------- Individual blocks ---------------- */
+/* ---------------- Hero: image + navy gradient ---------------- */
 
 function HeroBlock({ section }: { section: PageSection }) {
   const hasImage = Boolean(section.image);
-  const overlay = 0.55;
 
   return (
     <section className="relative overflow-hidden">
-      {hasImage && (
+      {hasImage ? (
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={mediaUrl(section.image!)}
-            alt={section.image_alt || section.heading}
+            alt={section.image_alt || section.heading || ""}
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
           <div
             className="absolute inset-0"
-            style={{ background: `rgba(0,0,0,${overlay})` }}
+            style={{
+              background:
+                "linear-gradient(100deg, rgba(11,61,145,0.94) 0%, rgba(11,61,145,0.78) 45%, rgba(11,61,145,0.42) 75%, rgba(11,61,145,0.22) 100%)",
+            }}
           />
         </div>
+      ) : (
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)",
+          }}
+        />
       )}
-      <div
-        className={`container-site relative py-24 md:py-32 ${
-          hasImage ? "text-white" : ""
-        }`}
-      >
-        {section.subtitle && (
-          <p
-            className="text-xs uppercase tracking-[0.2em] font-semibold mb-4"
-            style={{ color: "var(--color-secondary)" }}
-          >
-            {section.subtitle}
-          </p>
-        )}
-        {section.heading && (
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight max-w-4xl">
-            {section.heading}
-          </h2>
-        )}
-        {section.body && (
-          <div className="mt-6 max-w-2xl text-lg opacity-90">
-            <RichText html={section.body} />
-          </div>
-        )}
-        {section.button_text && section.button_url && (
-          <div className="mt-8">
-            <Button
-              href={section.button_url}
-              size="lg"
-              variant={hasImage ? "outline" : "primary"}
-              style={
-                hasImage
-                  ? { borderColor: "#fff", color: "#fff", borderWidth: 2 }
-                  : undefined
-              }
+
+      <div className="container-site relative py-20 md:py-28 min-h-[420px] md:min-h-[520px] flex items-center text-white">
+        <div className="max-w-3xl w-full">
+          {section.subtitle && (
+            <p
+              className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] mb-5 inline-flex items-center gap-3"
+              style={{ color: "var(--color-secondary)" }}
             >
-              {section.button_text}
-            </Button>
-          </div>
-        )}
+              <span
+                className="w-8 h-[2px]"
+                style={{ background: "var(--color-secondary)" }}
+              />
+              {section.subtitle}
+            </p>
+          )}
+
+          {section.heading && (
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6">
+              {section.heading}
+            </h1>
+          )}
+
+          {section.body && (
+            <div className="max-w-2xl text-lg text-white/85 leading-relaxed">
+              <RichText html={section.body} />
+            </div>
+          )}
+
+          {section.button_text && section.button_url && (
+            <div className="mt-8">
+              <Button
+                href={section.button_url}
+                size="lg"
+                variant="primary"
+              >
+                {section.button_text}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
 }
 
+/* ---------------- Text + Image ---------------- */
+
 function TextImageBlock({ section }: { section: PageSection }) {
-  const imageLeft = section.config?.image_position !== "right";
+  const imageRight = section.config?.image_position === "right";
 
   return (
-    <section className="py-20 md:py-24">
+    <section className="py-20 md:py-24 bg-white">
       <div className="container-site grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
         {section.image && (
-          <div className={`${imageLeft ? "" : "md:order-2"}`}>
+          <div className={imageRight ? "md:order-2" : ""}>
             <div className="relative">
               <div
-                className="absolute -inset-4 rounded-2xl opacity-10"
+                className="absolute -inset-4 rounded-2xl opacity-[0.08]"
                 style={{ background: "var(--color-primary)" }}
                 aria-hidden
               />
@@ -226,7 +258,7 @@ function TextImageBlock({ section }: { section: PageSection }) {
         <div className={section.image ? "" : "md:col-span-2 max-w-3xl mx-auto"}>
           {section.subtitle && (
             <p
-              className="text-xs uppercase tracking-[0.2em] font-semibold mb-3"
+              className="text-xs uppercase tracking-[0.2em] font-bold mb-3 inline-block"
               style={{ color: "var(--color-primary)" }}
             >
               {section.subtitle}
@@ -238,13 +270,15 @@ function TextImageBlock({ section }: { section: PageSection }) {
             </h2>
           )}
           {section.body && (
-            <div className="text-gray-700 leading-relaxed space-y-4">
+            <div className="text-[var(--color-muted)] leading-relaxed space-y-4">
               <RichText html={section.body} />
             </div>
           )}
           {section.button_text && section.button_url && (
             <div className="mt-8">
-              <Button href={section.button_url}>{section.button_text}</Button>
+              <Button href={section.button_url} variant="primary">
+                {section.button_text}
+              </Button>
             </div>
           )}
         </div>
@@ -252,6 +286,8 @@ function TextImageBlock({ section }: { section: PageSection }) {
     </section>
   );
 }
+
+/* ---------------- Rich text ---------------- */
 
 function RichTextBlock({ section }: { section: PageSection }) {
   return (
@@ -266,6 +302,8 @@ function RichTextBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Stats ---------------- */
+
 type StatItem = { value: string; label: string };
 type MissionVisionData = { mission?: string; vision?: string };
 type ValueItem = { title: string; description: string; icon?: string };
@@ -279,15 +317,15 @@ function StatsBlock({ section }: { section: PageSection }) {
 
   return (
     <section
-      className="py-16 md:py-20"
+      className="py-14 md:py-16"
       style={{
         background:
-          "linear-gradient(135deg, var(--color-primary) 0%, #0a2c66 100%)",
+          "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)",
       }}
     >
       <div className="container-site">
         {section.heading && (
-          <h2 className="text-3xl font-bold text-center text-white mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-white mb-10">
             {section.heading}
           </h2>
         )}
@@ -295,12 +333,12 @@ function StatsBlock({ section }: { section: PageSection }) {
           {items.map((it, i) => (
             <div key={i}>
               <div
-                className="text-4xl md:text-5xl font-bold mb-2"
+                className="text-4xl md:text-5xl font-bold mb-2 leading-none"
                 style={{ color: "var(--color-secondary)" }}
               >
                 {it.value}
               </div>
-              <div className="text-sm uppercase tracking-wider text-white/70">
+              <div className="text-sm text-white/75 uppercase tracking-wide">
                 {it.label}
               </div>
             </div>
@@ -311,40 +349,63 @@ function StatsBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Mission & Vision ---------------- */
+
 function MissionVisionBlock({ section }: { section: PageSection }) {
   const data = (section.config as MissionVisionData) ?? {};
   const items = [
-    { key: "mission", label: "Our Mission", text: data.mission, icon: "◆" },
-    { key: "vision", label: "Our Vision", text: data.vision, icon: "◈" },
+    {
+      key: "mission",
+      label: "Our Mission",
+      text: data.mission,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      ),
+    },
+    {
+      key: "vision",
+      label: "Our Vision",
+      text: data.vision,
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      ),
+    },
   ].filter((i) => i.text);
 
   if (!items.length) return null;
 
   return (
-    <section className="py-20 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-[var(--color-surface)]">
       <div className="container-site">
         {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">
-            {section.heading}
-          </h2>
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <span className="section-eyebrow">Purpose</span>
+            <h2 className="section-title">{section.heading}</h2>
+          </div>
         )}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {items.map((it) => (
             <div
               key={it.key}
-              className="bg-white rounded-xl p-8 md:p-10 shadow-sm border border-gray-100"
+              className="bg-white rounded-xl p-8 md:p-10 shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow"
             >
               <div
-                className="w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-5"
-                style={{
-                  background: "var(--color-primary)",
-                  color: "#fff",
-                }}
+                className="w-14 h-14 rounded-lg flex items-center justify-center mb-6 text-white"
+                style={{ background: "var(--color-primary)" }}
               >
                 {it.icon}
               </div>
-              <h3 className="text-xl font-bold mb-4">{it.label}</h3>
-              <RichText html={it.text ?? ""} />
+              <h3 className="text-2xl font-bold mb-4">{it.label}</h3>
+              <div className="text-[var(--color-muted)] leading-relaxed">
+                <RichText html={it.text ?? ""} />
+              </div>
             </div>
           ))}
         </div>
@@ -353,35 +414,39 @@ function MissionVisionBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Values ---------------- */
+
 function ValuesBlock({ section }: { section: PageSection }) {
   const items = (section.config?.items as ValueItem[] | undefined) ?? [];
   if (!items.length) return null;
 
   return (
-    <section className="py-20 md:py-24">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container-site">
-        {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">{section.heading}</h2>
-        )}
-        {section.body && (
-          <div className="text-gray-600 max-w-2xl mb-14">
-            <RichText html={section.body} />
-          </div>
-        )}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
+          <span className="section-eyebrow">Our Values</span>
+          {section.heading && <h2 className="section-title">{section.heading}</h2>}
+          {section.body && (
+            <div className="section-subtitle mx-auto">
+              <RichText html={section.body} />
+            </div>
+          )}
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {items.map((it, i) => (
             <div
               key={i}
-              className="group p-8 border rounded-xl hover:shadow-md transition bg-white"
+              className="group p-7 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-md transition-all bg-white"
             >
               <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold text-white mb-5"
+                className="w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-white mb-5 group-hover:scale-105 transition-transform"
                 style={{ background: "var(--color-primary)" }}
               >
-                {it.icon ?? i + 1}
+                {it.icon ?? it.title.charAt(0)}
               </div>
               <h3 className="text-lg font-semibold mb-3">{it.title}</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
+              <p className="text-[var(--color-muted)] leading-relaxed text-sm">
                 {it.description}
               </p>
             </div>
@@ -392,33 +457,42 @@ function ValuesBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Timeline ---------------- */
+
 function TimelineBlock({ section }: { section: PageSection }) {
   const items = (section.config?.items as TimelineItem[] | undefined) ?? [];
   if (!items.length) return null;
 
   return (
-    <section className="py-20 md:py-24 bg-gray-50">
-      <div className="container-site max-w-4xl">
-        {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold mb-14 text-center">
-            {section.heading}
-          </h2>
-        )}
-        <ol className="relative border-l-2 pl-8 space-y-10" style={{ borderColor: "var(--color-primary)" }}>
+    <section className="py-16 md:py-24 bg-[var(--color-surface)]">
+      <div className="container-site max-w-3xl">
+        <div className="text-center mb-14">
+          <span className="section-eyebrow">Our Journey</span>
+          {section.heading && <h2 className="section-title">{section.heading}</h2>}
+        </div>
+
+        <ol className="relative">
+          <div
+            className="absolute left-[7px] top-2 bottom-2 w-[2px]"
+            style={{ background: "var(--color-border)" }}
+            aria-hidden
+          />
           {items.map((it, i) => (
-            <li key={i} className="relative">
+            <li key={i} className="relative pl-10 pb-10 last:pb-0">
               <span
-                className="absolute -left-[42px] top-1 w-5 h-5 rounded-full border-4 border-white shadow"
+                className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm"
                 style={{ background: "var(--color-primary)" }}
               />
               <div
-                className="text-xs uppercase tracking-widest font-bold mb-1"
+                className="text-xs uppercase tracking-[0.14em] font-bold mb-2"
                 style={{ color: "var(--color-primary)" }}
               >
                 {it.year}
               </div>
               <h3 className="text-lg font-semibold mb-2">{it.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{it.description}</p>
+              <p className="text-[var(--color-muted)] leading-relaxed">
+                {it.description}
+              </p>
             </li>
           ))}
         </ol>
@@ -427,33 +501,40 @@ function TimelineBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Team ---------------- */
+
 function TeamBlock({ section }: { section: PageSection }) {
   const items = (section.config?.items as TeamItem[] | undefined) ?? [];
   if (!items.length) return null;
 
   return (
-    <section className="py-20 md:py-24">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container-site">
-        {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold mb-14 text-center">
-            {section.heading}
-          </h2>
-        )}
+        <div className="text-center mb-14 max-w-2xl mx-auto">
+          <span className="section-eyebrow">Our Team</span>
+          {section.heading && <h2 className="section-title">{section.heading}</h2>}
+        </div>
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {items.map((it, i) => (
             <div key={i} className="text-center">
-              <div className="aspect-square rounded-full overflow-hidden bg-gray-100 mb-5 mx-auto max-w-[200px]">
+              <div className="aspect-square rounded-full overflow-hidden bg-[var(--color-surface)] mb-5 mx-auto max-w-[200px]">
                 {it.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={it.image.startsWith("http") ? it.image : mediaUrl(it.image)}
+                    src={
+                      it.image.startsWith("http") ? it.image : mediaUrl(it.image)
+                    }
                     alt={it.name}
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <div
-                    className="w-full h-full flex items-center justify-center text-3xl font-bold"
-                    style={{ background: "#f1f5f9", color: "var(--color-primary)" }}
+                    className="w-full h-full flex items-center justify-center text-4xl font-bold"
+                    style={{
+                      background: "rgba(11,61,145,0.08)",
+                      color: "var(--color-primary)",
+                    }}
                   >
                     {it.name
                       .split(" ")
@@ -470,7 +551,9 @@ function TeamBlock({ section }: { section: PageSection }) {
               >
                 {it.role}
               </p>
-              {it.bio && <p className="text-sm text-gray-600">{it.bio}</p>}
+              {it.bio && (
+                <p className="text-sm text-[var(--color-muted)]">{it.bio}</p>
+              )}
             </div>
           ))}
         </div>
@@ -479,37 +562,49 @@ function TeamBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- Certifications ---------------- */
+
 function CertificationsBlock({ section }: { section: PageSection }) {
-  const items = (section.config?.items as CertificationItem[] | undefined) ?? [];
+  const items =
+    (section.config?.items as CertificationItem[] | undefined) ?? [];
   if (!items.length) return null;
 
   return (
-    <section className="py-20 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-[var(--color-surface)]">
       <div className="container-site">
-        {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold mb-14 text-center">
-            {section.heading}
-          </h2>
-        )}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
+          <span className="section-eyebrow">Standards</span>
+          {section.heading && <h2 className="section-title">{section.heading}</h2>}
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {items.map((it, i) => (
             <div
               key={i}
-              className="bg-white border rounded-xl p-6 flex items-start gap-4"
+              className="bg-white border border-[var(--color-border)] rounded-xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow"
             >
               <div
-                className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold"
+                className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center"
                 style={{
-                  background: "rgba(11,61,145,0.1)",
+                  background: "rgba(11,61,145,0.08)",
                   color: "var(--color-primary)",
                 }}
               >
-                ✓
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
               </div>
               <div>
                 <h3 className="font-semibold mb-1">{it.name}</h3>
                 {it.detail && (
-                  <p className="text-sm text-gray-600">{it.detail}</p>
+                  <p className="text-sm text-[var(--color-muted)]">{it.detail}</p>
                 )}
               </div>
             </div>
@@ -520,24 +615,32 @@ function CertificationsBlock({ section }: { section: PageSection }) {
   );
 }
 
+/* ---------------- CTA ---------------- */
+
 // function CTABlock({ section }: { section: PageSection }) {
 //   return (
 //     <section
-//       className="py-20"
+//       className="relative overflow-hidden"
 //       style={{
 //         background:
-//           "linear-gradient(135deg, var(--color-primary) 0%, #0a2c66 100%)",
-//         color: "#fff",
+//           "linear-gradient(120deg, var(--color-primary) 0%, #0a3d94 50%, #082b6a 100%)",
 //       }}
 //     >
-//       <div className="container-site text-center max-w-3xl mx-auto">
+//       <div
+//         className="absolute inset-0 opacity-[0.06]"
+//         style={{
+//           backgroundImage:
+//             "radial-gradient(circle at 20% 40%, #fff 1px, transparent 1px), radial-gradient(circle at 60% 80%, #fff 1px, transparent 1px)",
+//           backgroundSize: "80px 80px",
+//         }}
+//         aria-hidden
+//       />
+//       <div className="container-site relative py-16 md:py-20 text-white text-center max-w-3xl mx-auto">
 //         {section.heading && (
-//           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-//             {section.heading}
-//           </h2>
+//           <h2 className="text-3xl md:text-4xl font-bold mb-4">{section.heading}</h2>
 //         )}
 //         {section.body && (
-//           <div className="text-lg opacity-90 mb-8">
+//           <div className="text-lg text-white/85 mb-8">
 //             <RichText html={section.body} />
 //           </div>
 //         )}
@@ -545,7 +648,7 @@ function CertificationsBlock({ section }: { section: PageSection }) {
 //           <Button
 //             href={section.button_url}
 //             size="lg"
-//             style={{ background: "#fff", color: "var(--color-primary)" } as never}
+//             variant="primary"
 //           >
 //             {section.button_text}
 //           </Button>

@@ -30,3 +30,24 @@ class MediaAssetViewSet(viewsets.ModelViewSet):
     queryset = MediaAsset.objects.all()
     serializer_class = MediaAssetSerializer
     search_fields = ("title", "alt_text")
+
+from .models import CompanyProfile, MediaAsset, PageBanner, SiteSettings, SocialLink, ThemeSettings
+from .serializers import (
+    CompanyProfileSerializer,
+    MediaAssetSerializer,
+    PageBannerSerializer,
+    SiteSettingsSerializer,
+    SocialLinkSerializer,
+    ThemeSettingsSerializer,
+)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def page_banner(request, key: str):
+    """Return a single banner by key, or 404."""
+    try:
+        banner = PageBanner.objects.get(key=key, is_active=True)
+    except PageBanner.DoesNotExist:
+        return Response({"detail": "Not found"}, status=404)
+    return Response(PageBannerSerializer(banner).data)

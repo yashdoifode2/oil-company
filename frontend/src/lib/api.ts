@@ -26,3 +26,27 @@ export function mediaUrl(path: string | null | undefined): string {
   if (path.startsWith("http")) return path;
   return `${MEDIA_URL}${path}`;
 }
+
+
+export type PageBannerData = {
+  key: string;
+  eyebrow: string;
+  heading: string;
+  description: string;
+  image: string | null;
+  image_alt: string;
+  overlay_opacity: number;
+  is_active: boolean;
+};
+
+export async function getBanner(key: string): Promise<PageBannerData | null> {
+  try {
+    const res = await fetch(`${API_URL}/banners/${key}/`, {
+      next: { revalidate: 300, tags: [`banner:${key}`] },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}

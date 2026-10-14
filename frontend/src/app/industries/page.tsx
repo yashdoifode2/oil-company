@@ -27,10 +27,7 @@ export default async function IndustriesPage() {
   return (
     <>
       <PageBanner
-        eyebrow="Industries We Serve"
-        title="Solutions for demanding environments"
-        description="Specialized oil solutions for automotive, manufacturing, food, energy, and marine."
-        image="/hero-industries.jpg"
+        bannerKey="industries"
         breadcrumbs={[{ label: "Industries" }]}
       />
 

@@ -40,10 +40,7 @@ export default async function FAQPage() {
   return (
     <>
       <PageBanner
-        eyebrow="Support"
-        title="Frequently Asked Questions"
-        description="Answers to the questions we hear most. Still unsure? Contact us — we respond within one business day."
-        image="/hero-faqs.jpg"
+        bannerKey="faqs"
         breadcrumbs={[{ label: "FAQs" }]}
       />
 

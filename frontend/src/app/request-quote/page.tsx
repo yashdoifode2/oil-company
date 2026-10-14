@@ -35,10 +35,7 @@ export default async function RequestQuotePage({
   return (
     <>
       <PageBanner
-        eyebrow="Get Pricing"
-        title="Request a Quote"
-        description="Tell us your requirements and our team will prepare a tailored quote within one business day."
-        image="/hero-quote.jpg"
+        bannerKey="request-quote"
         breadcrumbs={[{ label: "Request a Quote" }]}
       />
 

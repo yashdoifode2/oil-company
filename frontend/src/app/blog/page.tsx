@@ -45,10 +45,7 @@ export default async function BlogPage({
   return (
     <>
       <PageBanner
-        eyebrow="News & Knowledge"
-        title="Insights & Blog"
-        description="Industry insights, expert guides, and the latest from Premium Oil."
-        image="/hero-blog.jpg"
+        bannerKey="blog"
         breadcrumbs={[{ label: "Blog" }]}
       />
 
