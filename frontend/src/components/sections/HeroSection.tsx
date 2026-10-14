@@ -8,15 +8,16 @@ export function HeroSection({ section }: { section: HomepageSection }) {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Background */}
       {hasImage ? (
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={mediaUrl(bg!)}
-            alt={section.image_alt || ""}
+            alt={section.image_alt || "Industrial oil refinery"}
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
+          {/* Navy gradient overlay — keeps text readable while showing the photo */}
           <div
             className="absolute inset-0"
             style={{
@@ -35,7 +36,6 @@ export function HeroSection({ section }: { section: HomepageSection }) {
         />
       )}
 
-      {/* Content */}
       <div className="container-site relative py-20 md:py-28 lg:py-32 min-h-[560px] md:min-h-[640px] flex items-center">
         <div className="max-w-3xl text-white">
           {section.subtitle && (
@@ -65,10 +65,7 @@ export function HeroSection({ section }: { section: HomepageSection }) {
 
           <div className="flex flex-wrap gap-4">
             {section.button_text && section.button_url && (
-              <Link
-                href={section.button_url}
-                className="btn btn-primary btn-lg"
-              >
+              <Link href={section.button_url} className="btn btn-primary btn-lg">
                 {section.button_text}
               </Link>
             )}

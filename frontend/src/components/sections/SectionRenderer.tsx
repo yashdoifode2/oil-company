@@ -7,7 +7,7 @@ import { IndustriesSection } from "./IndustriesSection";
 import { TestimonialsSection } from "./TestimonialsSection";
 import { FAQSection } from "./FAQSection";
 import { LatestArticlesSection } from "./LatestArticlesSection";
-import { CTASection } from "./CTASection";
+// import { CTASection } from "./CTASection";
 
 export function SectionRenderer({ section }: { section: HomepageSection }) {
   switch (section.section_type) {
@@ -19,7 +19,7 @@ export function SectionRenderer({ section }: { section: HomepageSection }) {
     case "testimonials": return <TestimonialsSection section={section} />;
     case "faq": return <FAQSection section={section} />;
     case "latest_articles": return <LatestArticlesSection section={section} />;
-    case "cta": return <CTASection section={section} />;
+    // case "cta": return <CTASection section={section} />;
     default: return null;
   }
 }
