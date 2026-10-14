@@ -47,16 +47,23 @@ class PageSection(models.Model):
         HERO = "hero", "Hero"
         TEXT_IMAGE = "text_image", "Text & Image"
         RICH_TEXT = "rich_text", "Rich Text"
+        STATS = "stats", "Statistics"
+        VALUES = "values", "Values / Pillars"
+        MISSION_VISION = "mission_vision", "Mission & Vision"
+        TIMELINE = "timeline", "Company Timeline"
+        TEAM = "team", "Team Members"
+        CERTIFICATIONS = "certifications", "Certifications"
         GALLERY = "gallery", "Image Gallery"
         PRODUCT_GRID = "product_grid", "Product Grid"
         CATEGORY_GRID = "category_grid", "Category Grid"
         BLOG_GRID = "blog_grid", "Blog Grid"
-        STATISTICS = "statistics", "Statistics"
         TESTIMONIALS = "testimonials", "Testimonials"
         FAQ = "faq", "FAQ"
         CONTACT = "contact", "Contact Details"
         CTA = "cta", "Call to Action"
         DOCUMENTS = "documents", "Document Downloads"
+
+    # ... rest of the fields unchanged ...
 
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="sections")
     section_type = models.CharField(max_length=32, choices=SectionType.choices)
