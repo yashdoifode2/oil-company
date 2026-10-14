@@ -127,8 +127,8 @@ function PageSectionRenderer({ section }: { section: PageSection }) {
       return <TeamBlock section={section} />;
     case "certifications":
       return <CertificationsBlock section={section} />;
-    case "cta":
-      return <CTABlock section={section} />;
+    // case "cta":
+    //   return <CTABlock section={section} />;
     default:
       return null;
   }
@@ -520,37 +520,37 @@ function CertificationsBlock({ section }: { section: PageSection }) {
   );
 }
 
-function CTABlock({ section }: { section: PageSection }) {
-  return (
-    <section
-      className="py-20"
-      style={{
-        background:
-          "linear-gradient(135deg, var(--color-primary) 0%, #0a2c66 100%)",
-        color: "#fff",
-      }}
-    >
-      <div className="container-site text-center max-w-3xl mx-auto">
-        {section.heading && (
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            {section.heading}
-          </h2>
-        )}
-        {section.body && (
-          <div className="text-lg opacity-90 mb-8">
-            <RichText html={section.body} />
-          </div>
-        )}
-        {section.button_text && section.button_url && (
-          <Button
-            href={section.button_url}
-            size="lg"
-            style={{ background: "#fff", color: "var(--color-primary)" } as never}
-          >
-            {section.button_text}
-          </Button>
-        )}
-      </div>
-    </section>
-  );
-}
+// function CTABlock({ section }: { section: PageSection }) {
+//   return (
+//     <section
+//       className="py-20"
+//       style={{
+//         background:
+//           "linear-gradient(135deg, var(--color-primary) 0%, #0a2c66 100%)",
+//         color: "#fff",
+//       }}
+//     >
+//       <div className="container-site text-center max-w-3xl mx-auto">
+//         {section.heading && (
+//           <h2 className="text-3xl md:text-4xl font-bold mb-4">
+//             {section.heading}
+//           </h2>
+//         )}
+//         {section.body && (
+//           <div className="text-lg opacity-90 mb-8">
+//             <RichText html={section.body} />
+//           </div>
+//         )}
+//         {section.button_text && section.button_url && (
+//           <Button
+//             href={section.button_url}
+//             size="lg"
+//             style={{ background: "#fff", color: "var(--color-primary)" } as never}
+//           >
+//             {section.button_text}
+//           </Button>
+//         )}
+//       </div>
+//     </section>
+//   );
+// }

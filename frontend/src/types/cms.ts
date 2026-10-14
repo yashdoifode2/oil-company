@@ -13,6 +13,7 @@ export type CompanyProfile = {
   phone_secondary: string;
   whatsapp: string;
   address: string;
+  address_short: string;   // ← new
   business_hours: string;
   country: string;
   service_regions: string;
@@ -21,6 +22,31 @@ export type CompanyProfile = {
   logo: string | null;
   logo_alt: string | null;
   favicon: string | null;
+  updated_at: string;
+};
+
+export type ProductListItem = {
+  id: number;
+  name: string;
+  slug: string;
+  category: ProductCategory | null;
+  short_description: string;
+  main_image: string | null;
+  is_featured: boolean;
+};
+
+export type ProductDetail = ProductListItem & {
+  full_description: string;
+  hero_tagline: string;   // ← new
+  image_alt: string;
+  specifications: Record<string, string>;
+  applications: string;
+  packaging_options: string;
+  availability: string;
+  images: { id: number; image: string; alt_text: string; order: number }[];
+  documents: { id: number; title: string; file: string; description: string }[];
+  seo_title: string;
+  meta_description: string;
   updated_at: string;
 };
 
@@ -155,29 +181,29 @@ export type ProductCategory = {
   order: number;
 };
 
-export type ProductListItem = {
-  id: number;
-  name: string;
-  slug: string;
-  category: ProductCategory | null;
-  short_description: string;
-  main_image: string | null;
-  is_featured: boolean;
-};
+// export type ProductListItem = {
+//   id: number;
+//   name: string;
+//   slug: string;
+//   category: ProductCategory | null;
+//   short_description: string;
+//   main_image: string | null;
+//   is_featured: boolean;
+// };
 
-export type ProductDetail = ProductListItem & {
-  full_description: string;
-  image_alt: string;
-  specifications: Record<string, string>;
-  applications: string;
-  packaging_options: string;
-  availability: string;
-  images: { id: number; image: string; alt_text: string; order: number }[];
-  documents: { id: number; title: string; file: string; description: string }[];
-  seo_title: string;
-  meta_description: string;
-  updated_at: string;
-};
+// export type ProductDetail = ProductListItem & {
+//   full_description: string;
+//   image_alt: string;
+//   specifications: Record<string, string>;
+//   applications: string;
+//   packaging_options: string;
+//   availability: string;
+//   images: { id: number; image: string; alt_text: string; order: number }[];
+//   documents: { id: number; title: string; file: string; description: string }[];
+//   seo_title: string;
+//   meta_description: string;
+//   updated_at: string;
+// };
 
 export type ArticleListItem = {
   id: number;

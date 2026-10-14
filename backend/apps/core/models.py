@@ -33,7 +33,11 @@ class CompanyProfile(SingletonModel):
     phone_secondary = models.CharField(max_length=50, blank=True)
     whatsapp = models.CharField(max_length=50, blank=True)
 
-    address = models.TextField(blank=True)
+    address_short = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Short address for header (e.g. 'Houston, TX')",
+    )
     business_hours = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
     service_regions = models.CharField(max_length=255, blank=True)

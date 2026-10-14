@@ -29,7 +29,17 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductImageInline, ProductDocumentInline]
     fieldsets = (
-        ("Basic", {"fields": ("name", "slug", "category", "status", "is_featured", "order")}),
+        ("Basic", {
+            "fields": (
+                "name",
+                "slug",
+                "category",
+                "status",
+                "is_featured",
+                "order",
+                "hero_tagline",
+            )
+        }),
         ("Content", {"fields": ("short_description", "full_description")}),
         ("Media", {"fields": ("main_image", "image_alt")}),
         ("Details", {"fields": ("specifications", "applications", "packaging_options", "availability")}),

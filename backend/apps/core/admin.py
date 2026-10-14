@@ -9,7 +9,19 @@ class CompanyProfileAdmin(admin.ModelAdmin):
         ("Identity", {"fields": ("business_name", "legal_name", "tagline", "logo", "logo_alt", "favicon")}),
         ("Description", {"fields": ("description", "about_content")}),
         ("Mission / Vision / Values", {"fields": ("mission", "vision", "values")}),
-        ("Contact", {"fields": ("email", "phone_primary", "phone_secondary", "whatsapp", "address", "business_hours", "country", "service_regions")}),
+        ("Contact", {
+            "fields": (
+                "email",
+                "phone_primary",
+                "phone_secondary",
+                "whatsapp",
+                "address",
+                "address_short",
+                "business_hours",
+                "country",
+                "service_regions",
+            )
+        }),
         ("Business Details", {"fields": ("registration_details", "certifications")}),
     )
 

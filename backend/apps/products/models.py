@@ -37,6 +37,11 @@ class Product(models.Model):
         ProductCategory, null=True, blank=True, on_delete=models.SET_NULL, related_name="products"
     )
     short_description = models.TextField(blank=True)
+    hero_tagline = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Short tagline for the product detail page hero",
+    )
     full_description = models.TextField(blank=True)
 
     main_image = models.ImageField(upload_to="products/", blank=True, null=True)

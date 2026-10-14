@@ -276,9 +276,10 @@ def seed_homepage():
             "order": 2,
             "config": {"limit": 6, "mode": "manual", "product_ids": []},
         },
-        {
+             {
             "section_type": HomepageSection.SectionType.COMPANY_INTRO,
-            "heading": "Refining trust since day one.",
+            "subtitle": "Why Choose Us",
+            "heading": "Built on quality. Focused on performance.",
             "description": (
                 "For over two decades, we've supplied certified oils to "
                 "manufacturers, food processors, and energy companies. Our "
@@ -287,8 +288,14 @@ def seed_homepage():
                 "every time."
             ),
             "button_text": "About Us",
-            "button_url": "/about/",
+            "button_url": "/about",
             "order": 3,
+            "config": {
+                "stats": [
+                    {"value": "20+", "label": "Years of experience"},
+                    {"value": "500+", "label": "Business customers"},
+                ]
+            },
         },
         {
             "section_type": HomepageSection.SectionType.INDUSTRIES,

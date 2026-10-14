@@ -38,6 +38,8 @@ SITE_URL = env("SITE_URL", default="http://localhost:3000")
 # ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
+
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -308,3 +310,195 @@ def _sqlite_pragmas(sender, connection, **kwargs):
 
 
 connection_created.connect(_sqlite_pragmas)
+
+# ---------------------------------------------------------------------------
+# Jazzmin — professional Django admin theme
+# ---------------------------------------------------------------------------
+
+JAZZMIN_SETTINGS = {
+    # Window title + header branding
+    "site_title": "Premium Oil Admin",
+    "site_header": "Premium Oil",
+    "site_brand": "Premium Oil CMS",
+    "site_logo": None,  # set to a static path like "images/logo.png" when you have one
+    "site_logo_classes": "img-circle",
+    "site_icon": None,
+    "welcome_sign": "Welcome to the Premium Oil content management system",
+    "copyright": "Premium Oil Co.",
+
+    # Top search bar — models the owner will search often
+    "search_model": ["products.Product", "blog.Article", "pages.Page", "inquiries.Inquiry"],
+
+    # Top-right user menu
+    "user_avatar": None,
+
+    # Sidebar order and grouping
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": [
+        "core",
+        "homepage",
+        "pages",
+        "navigation",
+        "products",
+        "blog",
+        "industries",
+        "testimonials",
+        "faqs",
+        "documents",
+        "inquiries",
+        "seo",
+        "users",
+        "auth",
+    ],
+
+    # Icons for apps and models — Font Awesome 5/6 class names
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+
+        "users": "fas fa-user-shield",
+        "users.User": "fas fa-user-shield",
+
+        "core": "fas fa-cogs",
+        "core.CompanyProfile": "fas fa-building",
+        "core.SiteSettings": "fas fa-globe",
+        "core.ThemeSettings": "fas fa-palette",
+        "core.SocialLink": "fas fa-share-alt",
+        "core.MediaAsset": "fas fa-photo-video",
+
+        "homepage": "fas fa-home",
+        "homepage.HomepageSection": "fas fa-th-large",
+
+        "pages": "fas fa-file-alt",
+        "pages.Page": "fas fa-file-alt",
+        "pages.PageSection": "fas fa-puzzle-piece",
+
+        "navigation": "fas fa-bars",
+        "navigation.MenuItem": "fas fa-link",
+        "navigation.HeaderSettings": "fas fa-heading",
+        "navigation.FooterSettings": "fas fa-shoe-prints",
+        "navigation.FooterColumn": "fas fa-columns",
+        "navigation.FooterLink": "fas fa-link",
+
+        "products": "fas fa-oil-can",
+        "products.Product": "fas fa-oil-can",
+        "products.ProductCategory": "fas fa-tags",
+        "products.ProductImage": "fas fa-image",
+        "products.ProductDocument": "fas fa-file-pdf",
+
+        "blog": "fas fa-newspaper",
+        "blog.Article": "fas fa-newspaper",
+        "blog.BlogCategory": "fas fa-folder",
+
+        "industries": "fas fa-industry",
+        "industries.Industry": "fas fa-industry",
+
+        "testimonials": "fas fa-quote-right",
+        "testimonials.Testimonial": "fas fa-quote-right",
+
+        "faqs": "fas fa-question-circle",
+        "faqs.FAQ": "fas fa-question-circle",
+
+        "documents": "fas fa-file-pdf",
+        "documents.Document": "fas fa-file-pdf",
+
+        "inquiries": "fas fa-envelope-open-text",
+        "inquiries.Inquiry": "fas fa-envelope-open-text",
+
+        "seo": "fas fa-search",
+        "seo.Redirect": "fas fa-exchange-alt",
+
+        "taggit": "fas fa-tags",
+        "taggit.Tag": "fas fa-tag",
+        "taggit.TaggedItem": "fas fa-tag",
+    },
+
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+
+    # UI behavior
+    "related_modal_active": True,
+    "custom_css": None,
+    "custom_js": None,
+    "use_google_fonts_cdn": False,
+    "show_ui_builder": False,
+
+    # Change form layout
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+        "core.CompanyProfile": "collapsible",
+        "core.SiteSettings": "collapsible",
+        "core.ThemeSettings": "collapsible",
+        "products.Product": "horizontal_tabs",
+        "blog.Article": "horizontal_tabs",
+        "pages.Page": "horizontal_tabs",
+        "inquiries.Inquiry": "collapsible",
+    },
+
+    # Optional: top menu links (like a real admin header)
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "View site", "url": "/", "new_window": True},
+        {
+            "name": "API Docs",
+            "url": "/api/docs/",
+            "new_window": True,
+            "icon": "fas fa-book",
+        },
+        {
+            "name": "Inquiries",
+            "url": "/admin/inquiries/inquiry/",
+            "icon": "fas fa-envelope",
+        },
+    ],
+
+    # Optional: usermenu links
+    "usermenu_links": [
+        {
+            "name": "Support",
+            "url": "mailto:support@premiumoil.example",
+            "new_window": True,
+            "icon": "fas fa-life-ring",
+        },
+        {"model": "auth.user"},
+    ],
+}
+
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}

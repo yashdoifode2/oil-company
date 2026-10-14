@@ -8,7 +8,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: "Request a quote or get in touch with our team.",
+  description: "Get in touch with Premium Oil's team. Request a quote or ask a question.",
 };
 
 type SearchParams = Promise<{ product?: string; industry?: string; message?: string }>;
@@ -20,85 +20,119 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
   try {
     const site = await apiGet<SiteBootstrap>("/site/", { revalidate: 300, tags: ["site"] });
     company = site.company;
-  } catch (err) {
-    console.error("[contact] site fetch failed:", err);
+  } catch {
+    /* ignore */
   }
 
   return (
-    <div className="container-site py-12">
-      <Breadcrumbs items={[{ label: "Contact" }]} />
-      <div className="grid lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          <h1 className="text-4xl font-bold mb-3">Request a Quote</h1>
-          <p className="text-gray-600 mb-10 max-w-2xl">
-            Tell us about your requirement and our team will respond within one business day.
+    <>
+      <section
+        className="py-16 md:py-20"
+        style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, #082b6a 100%)" }}
+      >
+        <div className="container-site text-white">
+          <Breadcrumbs items={[{ label: "Contact" }]} />
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">Contact Us</h1>
+          <p className="text-lg text-white/85 max-w-2xl">
+            We're here to help. Get in touch with our team for product enquiries, quotes, or technical support.
           </p>
-          <QuoteForm
-            initialProduct={sp.product ?? ""}
-            initialIndustry={sp.industry ?? ""}
-            initialMessage={sp.message ?? ""}
-          />
         </div>
-        <aside className="space-y-6">
-          <div className="p-6 bg-gray-50 rounded-lg">
-            <h2 className="font-semibold mb-4">Contact Details</h2>
-            {company ? (
-              <ul className="space-y-3 text-sm">
-                {company.email && (
-                  <li>
-                    <span className="text-gray-500 block">Email</span>
-                    <a href={`mailto:${company.email}`} className="font-medium">{company.email}</a>
-                  </li>
-                )}
-                {company.phone_primary && (
-                  <li>
-                    <span className="text-gray-500 block">Phone</span>
-                    <a
-                      href={`tel:${company.phone_primary.replace(/\s/g, "")}`}
-                      className="font-medium"
+      </section>
+
+      <div className="container-site py-16">
+        <div className="grid lg:grid-cols-[400px_1fr] gap-12">
+          <aside className="space-y-8">
+            <div>
+              <h2 className="text-xl font-bold mb-6">Get in touch</h2>
+              <ul className="space-y-5">
+                {company?.phone_primary && (
+                  <li className="flex gap-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(11,61,145,0.08)", color: "var(--color-primary)" }}
                     >
-                      {company.phone_primary}
-                    </a>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.07 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.09 9.09a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-[var(--color-muted)] mb-0.5">Call us</div>
+                      <a
+                        href={`tel:${company.phone_primary.replace(/\s/g, "")}`}
+                        className="font-semibold"
+                      >
+                        {company.phone_primary}
+                      </a>
+                    </div>
                   </li>
                 )}
-                {company.whatsapp && (
-                  <li>
-                    <span className="text-gray-500 block">WhatsApp</span>
-                    <a
-                      href={`https://wa.me/${company.whatsapp.replace(/[^\d]/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium"
+                {company?.email && (
+                  <li className="flex gap-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(11,61,145,0.08)", color: "var(--color-primary)" }}
                     >
-                      Message us
-                    </a>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-[var(--color-muted)] mb-0.5">Email</div>
+                      <a href={`mailto:${company.email}`} className="font-semibold">
+                        {company.email}
+                      </a>
+                    </div>
                   </li>
                 )}
-                {company.address && (
-                  <li>
-                    <span className="text-gray-500 block">Address</span>
-                    <span className="font-medium whitespace-pre-line">{company.address}</span>
+                {company?.address && (
+                  <li className="flex gap-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(11,61,145,0.08)", color: "var(--color-primary)" }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-[var(--color-muted)] mb-0.5">Address</div>
+                      <div className="font-semibold whitespace-pre-line">{company.address}</div>
+                    </div>
                   </li>
                 )}
-                {company.business_hours && (
-                  <li>
-                    <span className="text-gray-500 block">Business Hours</span>
-                    <span className="font-medium">{company.business_hours}</span>
+                {company?.business_hours && (
+                  <li className="flex gap-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(11,61,145,0.08)", color: "var(--color-primary)" }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-[var(--color-muted)] mb-0.5">Business hours</div>
+                      <div className="font-semibold">{company.business_hours}</div>
+                    </div>
                   </li>
                 )}
               </ul>
-            ) : (
-              <p className="text-sm text-gray-500">Contact details unavailable.</p>
-            )}
+            </div>
+          </aside>
+
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Send us a message</h2>
+            <QuoteForm
+              initialProduct={sp.product ?? ""}
+              initialIndustry={sp.industry ?? ""}
+              initialMessage={sp.message ?? ""}
+            />
           </div>
-          <div className="p-6 border rounded-lg">
-            <h2 className="font-semibold mb-3">Prefer to talk?</h2>
-            <p className="text-sm text-gray-600">
-              Reach out through the form and we'll call you back at a time that suits you.
-            </p>
-          </div>
-        </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
